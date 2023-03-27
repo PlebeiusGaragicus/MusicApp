@@ -8,23 +8,11 @@ dotenv.config();
 
 const app = express();
 
-// import { Server } from 'socket.io';
-// import { createServer } from 'http';
-
-// const httpServer = createServer(app);
-// const io = new Server(httpServer, { cors: { origin: '*' } });
-
 import http from 'http'
-import WebSocket from 'ws'
 import { WebSocketServer } from 'ws'
 
-// const WebSocket = require('ws');
-
 const server = http.createServer(app);
-// const wss = new WebSocket.Server({ server });
 const wss = new WebSocketServer({ server });
-
-
 
 const port = process.env.PORT || 3000;
 
@@ -81,20 +69,30 @@ app.get('/api/available-songs', (req, res) => {
     });
 });
 
-
-app.listen(port, '192.168.86.21', () => {
-    console.log(`Server is running on http://192.168.86.21:${port}`);
+app.get('/api/cashtag', (req, res) => {
+    const resUrl = `https://cash.app/${process.env.CASH_TAG}`;
+    res.json({ url: resUrl });
 });
-
-
 
 
 wss.on('connection', (ws) => {
     console.log('Client connected');
 
     ws.on('message', (message) => {
-        console.log(`Received message: ${message}`);
-        ws.send(`You sent: ${message}`);
+        console.log(`A user sent a message: ${message}`);
+        const data = JSON.parse(message);
+        if (data.type === 'request') {
+            const { songTitle, tipAmount } = data;
+            console.log(`Received message: ${songTitle} with tip amount: ${tipAmount}`);
+
+            songRequests.push({ songTitle, tipAmount }); // we add it to the global song list
+            songRequests.sort((a, b) => parseFloat(b.tipAmount) - parseFloat(a.tipAmount)); // sort list
+
+            console.log("this is the server's sorted song list:")
+            console.log(songRequests)
+
+            broadcast(JSON.stringify({ type: 'newSong', songTitle, tipAmount }));
+        }
     });
 
     ws.on('close', () => {
@@ -102,108 +100,35 @@ wss.on('connection', (ws) => {
     });
 });
 
-io.on('connection', (socket) => {
-    console.log('A user connected');
-
-    // Listen for the song request event from clients
-    socket.on('songRequestForm', async (songTitle, tipAmount) => {
-        try {
-            // Your logic to save the new song request to the database
-
-            // Fetch the updated list of song requests after saving the new request
-            const updatedSongRequests = await fetchUpdatedSongRequests();
-
-            // Emit the updated list of song requests to all connected clients
-            io.emit('updateSongRequests', updatedSongRequests);
-        } catch (error) {
-            console.error('Error processing song request:', error);
+function broadcast(message) {
+    console.log("broadcasing to all!")
+    wss.clients.forEach((client) => {
+        console.log("broadcasting client")
+        if (client.readyState === client.OPEN) {
+            client.send(message);
         }
     });
-
-    // Set up a disconnect event handler
-    socket.on('disconnect', () => {
-        console.log('A user disconnected');
-    });
-});
-
-
-
-
-
-// io.listen(3000);
+}
 
 server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
-
-
-// Set up a connection event handler
-// io.on('connection', (socket) => {
-//     console.log('A user connected');
-
-//     // Listen for the song request event from clients
-//     socket.on('songRequestForm', async (songTitle, tipAmount) => {
-//         try {
-//             // Your logic to save the new song request to the database
-
-//             // Fetch the updated list of song requests after saving the new request
-//             const updatedSongRequests = await fetchUpdatedSongRequests();
-
-//             // Emit the updated list of song requests to all connected clients
-//             io.emit('updateSongRequests', updatedSongRequests);
-//         } catch (error) {
-//             console.error('Error processing song request:', error);
-//         }
-//     });
-
-//     // Set up a disconnect event handler
-//     socket.on('disconnect', () => {
-//         console.log('A user disconnected');
-//     });
+// app.listen(port, '192.168.86.21', () => {
+//     console.log(`Server is running on http://192.168.86.21:${port}`);
 // });
-
-
-
-
-
-
-
-
-
 
 // app.listen(port, () => {
 //     console.log(`Server is running on http://localhost:${port}`);
 // });
 
+// const host = process.env.IP_ADDRESS
+// console.log(host)
 
+// app.listen(port, host, () => {
+//     console.log(`Server is running on http://${host}:${port}`);
+// });
 
 // app.listen(port, '0.0.0.0', () => {
 //     console.log(`Server is running on http://0.0.0.0:${port}`);
-// });
-
-
-
-// app.get('/socket.io-client/dist/socket.io.js', (req, res) => {
-//     res.sendFile(path.join(__dirname, '../node_modules/socket.io-client/dist/socket.io.js'));
-// });
-
-
-// io.on('connection', (socket) => {
-//     console.log('A user connected');
-
-//     // Listen for song request event from clients
-//     socket.on('songRequest', async (songTitle, tipAmount) => {
-//         // Your logic to save the new song request to the database
-
-//         // Fetch the updated list of song requests after saving the new request
-//         const updatedSongRequests = await fetchUpdatedSongRequests();
-
-//         // Emit the updated list of song requests to all connected clients
-//         io.emit('updateSongRequests', updatedSongRequests);
-//     });
-
-//     socket.on('disconnect', () => {
-//         console.log('A user disconnected');
-//     });
 // });

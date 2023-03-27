@@ -119,7 +119,7 @@
 
     <br>
 
-    <form id="songRequestForm">
+    <!-- <form id="songRequestForm">
         <label for="songTitle">Available Songs</label>
         <br>
         <select id="songTitle" required>
@@ -128,9 +128,30 @@
         <input type="number" id="tipAmount" placeholder="Tip Amount" min="1" step="0.01" required>
         <br><br>
         <button type="submit">Request Song</button>
-    </form>
+    </form> -->
 
+    <label for="songTitle">Available Songs</label>
+    <select id="songTitle" required></select>
+    <br><br>
 
+    <laberl for="tipAmount">Tip Amount</laberl>
+    <input type="number" id="tipAmount" placeholder="Tip Amount" min="1" required>
+    <br><br>
+
+    <button type="button" id="payWithCashApp">Request song with Cash App</button>
+    <br><br>
+
+    <button type="button" id="payWithVenmo">Request song with Venmo</button>
+    <br><br>
+
+    <!-- <br>
+    <a href="https://cash.app/$Station13A/12.69">Pay with Cash App</a>
+    <br>
+    <a href="https://cash.app/$fullertonmatt/1.00">Pay with Cash App</a>
+    <br>
+    <a href="https://venmo.com/@Micah-Fullerton?txn=pay&note=from%20bailout.nyc">Pay with Venmo</a>
+    <br>
+    <a href="">Pay with Venmo</a> -->
 
 </body>
 

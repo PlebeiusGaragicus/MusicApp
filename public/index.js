@@ -1,17 +1,17 @@
-// import io from 'socket.io-client';
-
-// const socket = io();
-
-// socket.on('updateSongRequests', (updatedSongRequests) => {
-//     // Update the song requests table with the updated list
-//     // displaySongRequests(updatedSongRequests);
-//     console.log("A NEW SONG WAS REQUESTED!!", updatedSongRequests)
-// });
-
-
-
-const songRequestForm = document.getElementById("songRequestForm");
 const songList = document.getElementById("songList");
+const tipAmount = document.getElementById("tipAmount");
+
+const payWithCashApp = document.getElementById("payWithCashApp");
+const payWithVenmo = document.getElementById("payWithVenmo");
+
+
+
+payWithVenmo.addEventListener("click", () => {
+    console.log("user is paying with venmo")
+});
+
+
+
 
 
 // function displaySongRequests(songRequest) {
@@ -69,50 +69,51 @@ async function fetchSongRequests() {
 // }
 
 
-async function submitSongRequest(songTitle, tipAmount) {
-    const response = await fetch('/api/songs', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ songTitle, tipAmount }),
-    });
+// async function submitSongRequest(songTitle, tipAmount) {
+//     const response = await fetch('/api/songs', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ songTitle, tipAmount }),
+//     });
 
-    if (response.ok) {
-        fetchSongRequests();
+//     if (response.ok) {
+//         fetchSongRequests();
 
-        socket.emit('songRequest', songTitle, tipAmount);
-    } else {
-        console.error('Failed to submit song request');
-    }
-}
+//         socket.emit('songRequest', songTitle, tipAmount);
+//     } else {
+//         console.error('Failed to submit song request');
+//     }
+// }
 
 
+// TODO: THIS IS THE OLD SUBMIT BUTTON
+// songRequestForm.addEventListener('submit', async (event) => {
+//     event.preventDefault();
 
-songRequestForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
+//     const songTitle = document.getElementById('songTitle').value.trim();
+//     const tipAmount = parseFloat(document.getElementById('tipAmount').value).toFixed(2);
 
-    const songTitle = document.getElementById('songTitle').value.trim();
-    const tipAmount = parseFloat(document.getElementById('tipAmount').value).toFixed(2);
+//     if (songTitle === "Select a song:") {
+//         alert("Please select a song")
+//         return
+//     }
 
-    if (songTitle === "Select a song:") {
-        alert("Please select a song")
-        return
-    }
+//     if (songTitle && tipAmount) {
+//         await submitSongRequest(songTitle, tipAmount);
 
-    if (songTitle && tipAmount) {
-        await submitSongRequest(songTitle, tipAmount);
-
-        // Clear input fields after submitting the form
-        document.getElementById('songTitle').value = '';
-        document.getElementById('tipAmount').value = '';
-    }
-});
+//         // Clear input fields after submitting the form
+//         document.getElementById('songTitle').value = '';
+//         document.getElementById('tipAmount').value = '';
+//     }
+// });
 
 
 // THIS IS FOR A DROP DOWN AKA 'SELECT'
 function populateAvailableSongs(songs) {
     const songSelect = document.getElementById('songTitle');
+    console.log("populating song list")
 
     const firstOption = document.createElement('option');
     firstOption.value = "Select a song:";
@@ -149,35 +150,102 @@ fetchSongRequests();
 
 document.addEventListener('DOMContentLoaded', () => {
     const socket = new WebSocket('ws://localhost:3000');
-    const messageForm = document.getElementById('message-form');
-    const messageInput = document.getElementById('message-input');
-    const messagesContainer = document.getElementById('messages');
 
     socket.addEventListener('open', () => {
         console.log('Connected to WebSocket server');
     });
 
-    // socket.addEventListener('message', (event) => {
-    //     console.log(`Message from server: ${event.data}`);
-    //     const messageElement = document.createElement('li');
-    //     messageElement.textContent = `Server: ${event.data}`;
-    //     messagesContainer.appendChild(messageElement);
-    // });
+    socket.addEventListener('message', (event) => {
+        console.log(`Message from server: ${event.data}`);
+        const data = JSON.parse(event.data);
+        if (data.type === 'newSong') {
+            console.log("adding a new song because the server told me to")
+            const { songTitle, tipAmount } = data;
+            console.log(`Received new song from the server: ${songTitle}`);
+
+            const tableBody = document.getElementById('songRequestTable').querySelector('tbody');
+            const row = document.createElement('tr');
+
+            const titleCell = document.createElement('td');
+            titleCell.textContent = songTitle;
+            row.appendChild(titleCell);
+
+            const tipAmountCell = document.createElement('td');
+            tipAmountCell.textContent = `$${parseFloat(tipAmount).toFixed(2)}`;
+            row.appendChild(tipAmountCell);
+
+            row.dataset.tipAmount = tipAmount;
+
+            tableBody.appendChild(row);
+
+            // Sort the rows by tipAmount
+            sortTableByTipAmount(tableBody);
+        }
+    });
 
     socket.addEventListener('close', () => {
         console.log('Disconnected from WebSocket server');
     });
 
-    messageForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const message = messageInput.value;
-        socket.send(message);
-        messageInput.value = '';
+    payWithCashApp.addEventListener("click", async () => {
+        console.log("user is paying with cash app")
 
-        const messageElement = document.createElement('li');
-        messageElement.textContent = `You: ${message}`;
-        messagesContainer.appendChild(messageElement);
+        // const songTitle = songList.options[songList.selectedIndex].text;
+        const songTitle = document.getElementById('songTitle').value.trim();
+        console.log("songTitle", songTitle)
+
+        if (songTitle === "Select a song:") {
+            console.log("NO SONG WAS ACTUALLY SELECTED.. BRO!!!")
+            return
+        }
+
+        const tipAmount = parseFloat(document.getElementById('tipAmount').value).toFixed(2);
+        console.log("tipAmount", tipAmount)
+        if (tipAmount === "NaN") {
+            console.log("NO TIP AMOUNT WAS ACTUALLY SELECTED.. BRO!!!")
+            return
+        }
+
+        const songRequest = {
+            songTitle: songTitle,
+            tipAmount: tipAmount
+        }
+
+        socket.send(JSON.stringify({ type: 'request', ...songRequest }));
+
+        const cashAppUrl = await fetch('/api/cashtag');
+        const { url } = await cashAppUrl.json();
+        console.log("url", url)
+
+        const openUrl = `${url}/${tipAmount}`;
+        console.log("openUrl", openUrl)
+
+        //TODO: this needs to be tailored to mobile...
+        // window.open(openUrl, '_blank');
+        window.location.href = url;
     });
+
+    function sortTableByTipAmount(tableBody) {
+        const rows = Array.from(tableBody.querySelectorAll('tr')).sort((a, b) => {
+            return parseFloat(b.dataset.tipAmount) - parseFloat(a.dataset.tipAmount);
+        });
+
+        tableBody.innerHTML = '';
+        rows.forEach(row => tableBody.appendChild(row));
+    }
+
+
+
+    // messageForm.addEventListener('submit', (event) => {
+    //     event.preventDefault();
+    //     const message = messageInput.value;
+    //     socket.send(message);
+    //     messageInput.value = '';
+
+    //     const messageElement = document.createElement('li');
+    //     messageElement.textContent = `You: ${message}`;
+    //     messagesContainer.appendChild(messageElement);
+    // });
 });
 
 
