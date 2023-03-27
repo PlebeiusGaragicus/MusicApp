@@ -41,20 +41,15 @@ app.post('/api/songs', (req, res) => {
 
     console.log(songTitle, tipAmount)
 
+    //NOTE: I'm not using validation here because it is done on the client side
+    //TODO: Although... I need to combine tips for duplicate songs
     songRequests.push({ songTitle, tipAmount });
     res.status(201).json({ message: 'Song request added successfully' });
-    // if (songTitle && typeof tipAmount === 'number') {
-    //     songRequests.push({ songTitle, tipAmount });
-    //     res.status(201).json({ message: 'Song request added successfully' });
-    // } else {
-    //     res.status(400).json({ message: 'Invalid request data' });
-    // }
 });
 
 
 // FETCH songs from csv
 app.get('/api/available-songs', (req, res) => {
-    // const songsPath = path.join(process.cwd(), 'public', 'songs.csv');
     const songsPath = path.join(process.cwd(), 'songs.csv');
 
     fs.readFile(songsPath, 'utf8', (err, data) => {
@@ -114,6 +109,8 @@ server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
+
+// WE DON'T USE THESE, APPARENTLY...
 // app.listen(port, '192.168.86.21', () => {
 //     console.log(`Server is running on http://192.168.86.21:${port}`);
 // });

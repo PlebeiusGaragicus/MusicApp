@@ -5,39 +5,6 @@ const payWithCashApp = document.getElementById("payWithCashApp");
 const payWithVenmo = document.getElementById("payWithVenmo");
 
 
-
-payWithVenmo.addEventListener("click", () => {
-    console.log("user is paying with venmo")
-});
-
-
-
-
-
-// function displaySongRequests(songRequest) {
-//     // const songRequestsTable = document.getElementById('songRequestsTable');
-//     const songRequestsTable = document.getElementById('songRequestTable');
-
-//     const { songTitle, tipAmount } = songRequest;
-
-//     // Create a new table row and table data elements
-//     const row = document.createElement('tr');
-//     const songTitleCell = document.createElement('td');
-//     const tipAmountCell = document.createElement('td');
-
-//     // Set the text content of the table data elements
-//     songTitleCell.textContent = songTitle;
-//     tipAmountCell.textContent = tipAmount;
-
-//     // Append the table data elements to the table row
-//     row.appendChild(songTitleCell);
-//     row.appendChild(tipAmountCell);
-
-//     // Append the table row to the table body
-//     songRequestsTable.appendChild(row);
-// }
-
-
 async function fetchSongRequests() {
     const response = await fetch('/api/songs');
     const songRequests = await response.json();
@@ -63,52 +30,6 @@ async function fetchSongRequests() {
     });
 }
 
-// async function submitSongRequest(songTitle, tipAmount) {
-//     // Emit the songRequest event to the server with the songTitle and tipAmount
-//     socket.emit('songRequest', songTitle, tipAmount);
-// }
-
-
-// async function submitSongRequest(songTitle, tipAmount) {
-//     const response = await fetch('/api/songs', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ songTitle, tipAmount }),
-//     });
-
-//     if (response.ok) {
-//         fetchSongRequests();
-
-//         socket.emit('songRequest', songTitle, tipAmount);
-//     } else {
-//         console.error('Failed to submit song request');
-//     }
-// }
-
-
-// TODO: THIS IS THE OLD SUBMIT BUTTON
-// songRequestForm.addEventListener('submit', async (event) => {
-//     event.preventDefault();
-
-//     const songTitle = document.getElementById('songTitle').value.trim();
-//     const tipAmount = parseFloat(document.getElementById('tipAmount').value).toFixed(2);
-
-//     if (songTitle === "Select a song:") {
-//         alert("Please select a song")
-//         return
-//     }
-
-//     if (songTitle && tipAmount) {
-//         await submitSongRequest(songTitle, tipAmount);
-
-//         // Clear input fields after submitting the form
-//         document.getElementById('songTitle').value = '';
-//         document.getElementById('tipAmount').value = '';
-//     }
-// });
-
 
 // THIS IS FOR A DROP DOWN AKA 'SELECT'
 function populateAvailableSongs(songs) {
@@ -128,6 +49,7 @@ function populateAvailableSongs(songs) {
     });
 }
 
+
 async function fetchAvailableSongs() {
     const songs = await fetch('/api/available-songs');
     const ans = await songs.json()
@@ -135,15 +57,6 @@ async function fetchAvailableSongs() {
     console.log(ans)
     return ans
 }
-
-// async IIFE (Immediately Invoked Function Expression) to call fetchAvailableSongs()
-//  and populate the dropdown when the page loads:
-(async function () {
-    const songs = await fetchAvailableSongs();
-    populateAvailableSongs(songs);
-})();
-
-fetchSongRequests();
 
 
 
@@ -225,100 +138,31 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = url;
     });
 
-    function sortTableByTipAmount(tableBody) {
-        const rows = Array.from(tableBody.querySelectorAll('tr')).sort((a, b) => {
-            return parseFloat(b.dataset.tipAmount) - parseFloat(a.dataset.tipAmount);
-        });
 
-        tableBody.innerHTML = '';
-        rows.forEach(row => tableBody.appendChild(row));
-    }
-
-
-
-    // messageForm.addEventListener('submit', (event) => {
-    //     event.preventDefault();
-    //     const message = messageInput.value;
-    //     socket.send(message);
-    //     messageInput.value = '';
-
-    //     const messageElement = document.createElement('li');
-    //     messageElement.textContent = `You: ${message}`;
-    //     messagesContainer.appendChild(messageElement);
-    // });
+    payWithVenmo.addEventListener("click", async () => {
+        console.log("user is paying with venmo")
+        alert("Venmo is not yet supported. Please pay with Cash App.")
+    });
 });
 
 
+function sortTableByTipAmount(tableBody) {
+    const rows = Array.from(tableBody.querySelectorAll('tr')).sort((a, b) => {
+        return parseFloat(b.dataset.tipAmount) - parseFloat(a.dataset.tipAmount);
+    });
 
-// THIS CODE WORKS!!!!!!!!!
-// document.addEventListener('DOMContentLoaded', () => {
-//     const socket = new WebSocket('ws://localhost:3000');
-//     const messageForm = document.getElementById('message-form');
-//     const messageInput = document.getElementById('message-input');
-//     const messagesContainer = document.getElementById('messages');
-
-//     socket.addEventListener('open', () => {
-//         console.log('Connected to WebSocket server');
-//     });
-
-//     socket.addEventListener('message', (event) => {
-//         console.log(`Message from server: ${event.data}`);
-//         const messageElement = document.createElement('li');
-//         messageElement.textContent = `Server: ${event.data}`;
-//         messagesContainer.appendChild(messageElement);
-//     });
-
-//     socket.addEventListener('close', () => {
-//         console.log('Disconnected from WebSocket server');
-//     });
-
-//     messageForm.addEventListener('submit', (event) => {
-//         event.preventDefault();
-//         const message = messageInput.value;
-//         socket.send(message);
-//         messageInput.value = '';
-
-//         const messageElement = document.createElement('li');
-//         messageElement.textContent = `You: ${message}`;
-//         messagesContainer.appendChild(messageElement);
-//     });
-// });
+    tableBody.innerHTML = '';
+    rows.forEach(row => tableBody.appendChild(row));
+}
 
 
 
+// async IIFE (Immediately Invoked Function Expression) to call fetchAvailableSongs()
+//  and populate the dropdown when the page loads:
+(async function () {
+    const songs = await fetchAvailableSongs();
+    populateAvailableSongs(songs);
+})();
 
 
-// populateAvailableSongs();
-
-
-
-
-
-// async function submitSongRequest(songTitle, tipAmount) {
-//     const response = await fetch('/api/songs', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ songTitle, tipAmount }),
-//     });
-
-//     if (response.ok) {
-//         fetchSongRequests();
-//     } else {
-//         console.error('Failed to submit song request');
-//     }
-// }
-
-
-
-// THIS IS FOR AN INPUT BOX
-// function populateAvailableSongs(songs) {
-//     const songDatalist = document.getElementById('availableSongs');
-
-//     songs.forEach((song) => {
-//         const option = document.createElement('option');
-//         option.value = song;
-//         songDatalist.appendChild(option);
-//     });
-// }
+fetchSongRequests();
