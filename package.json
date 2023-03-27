@@ -24,6 +24,7 @@
     "node-fetch": "^3.3.1",
     "path": "^0.12.7",
     "socket.io": "^4.6.1",
-    "socket.io-client": "^4.6.1"
+    "socket.io-client": "^4.6.1",
+    "ws": "^8.13.0"
   }
 }

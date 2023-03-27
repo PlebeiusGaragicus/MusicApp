@@ -1,12 +1,14 @@
 // import io from 'socket.io-client';
 
-const socket = io();
+// const socket = io();
 
-socket.on('updateSongRequests', (updatedSongRequests) => {
-    // Update the song requests table with the updated list
-    // displaySongRequests(updatedSongRequests);
-    console.log("A NEW SONG WAS REQUESTED!!", updatedSongRequests)
-});
+// socket.on('updateSongRequests', (updatedSongRequests) => {
+//     // Update the song requests table with the updated list
+//     // displaySongRequests(updatedSongRequests);
+//     console.log("A NEW SONG WAS REQUESTED!!", updatedSongRequests)
+// });
+
+
 
 const songRequestForm = document.getElementById("songRequestForm");
 const songList = document.getElementById("songList");
@@ -141,6 +143,79 @@ async function fetchAvailableSongs() {
 })();
 
 fetchSongRequests();
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const socket = new WebSocket('ws://localhost:3000');
+    const messageForm = document.getElementById('message-form');
+    const messageInput = document.getElementById('message-input');
+    const messagesContainer = document.getElementById('messages');
+
+    socket.addEventListener('open', () => {
+        console.log('Connected to WebSocket server');
+    });
+
+    // socket.addEventListener('message', (event) => {
+    //     console.log(`Message from server: ${event.data}`);
+    //     const messageElement = document.createElement('li');
+    //     messageElement.textContent = `Server: ${event.data}`;
+    //     messagesContainer.appendChild(messageElement);
+    // });
+
+    socket.addEventListener('close', () => {
+        console.log('Disconnected from WebSocket server');
+    });
+
+    messageForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const message = messageInput.value;
+        socket.send(message);
+        messageInput.value = '';
+
+        const messageElement = document.createElement('li');
+        messageElement.textContent = `You: ${message}`;
+        messagesContainer.appendChild(messageElement);
+    });
+});
+
+
+
+// THIS CODE WORKS!!!!!!!!!
+// document.addEventListener('DOMContentLoaded', () => {
+//     const socket = new WebSocket('ws://localhost:3000');
+//     const messageForm = document.getElementById('message-form');
+//     const messageInput = document.getElementById('message-input');
+//     const messagesContainer = document.getElementById('messages');
+
+//     socket.addEventListener('open', () => {
+//         console.log('Connected to WebSocket server');
+//     });
+
+//     socket.addEventListener('message', (event) => {
+//         console.log(`Message from server: ${event.data}`);
+//         const messageElement = document.createElement('li');
+//         messageElement.textContent = `Server: ${event.data}`;
+//         messagesContainer.appendChild(messageElement);
+//     });
+
+//     socket.addEventListener('close', () => {
+//         console.log('Disconnected from WebSocket server');
+//     });
+
+//     messageForm.addEventListener('submit', (event) => {
+//         event.preventDefault();
+//         const message = messageInput.value;
+//         socket.send(message);
+//         messageInput.value = '';
+
+//         const messageElement = document.createElement('li');
+//         messageElement.textContent = `You: ${message}`;
+//         messagesContainer.appendChild(messageElement);
+//     });
+// });
+
 
 
 
