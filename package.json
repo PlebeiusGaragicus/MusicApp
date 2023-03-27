@@ -1,0 +1,30 @@
+{
+  "name": "musicapp",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PlebeiusGaragicus/MusicApp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PlebeiusGaragicus/MusicApp/issues"
+  },
+  "homepage": "https://github.com/PlebeiusGaragicus/MusicApp#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.1",
+    "path": "^0.12.7",
+    "socket.io": "^4.6.1",
+    "socket.io-client": "^4.6.1",
+    "ws": "^8.13.0"
+  }
+}
