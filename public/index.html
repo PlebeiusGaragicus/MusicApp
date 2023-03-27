@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicApp</title>
+    <!-- <link rel="stylesheet" href="./styles.css"> -->
+    <style>
+        html {
+            background: rgb(2, 3, 92);
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            color: rgb(82, 255, 160);
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 3rem;
+            font-weight: 400;
+            padding: 20px;
+        }
+
+        #songRequestForm {
+            margin-bottom: 20px;
+        }
+
+        .song-item {
+            margin-bottom: 10px;
+        }
+
+        #tableContainer {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        #songRequestTable {
+            border-collapse: collapse;
+            margin-top: 20px;
+            width: 90%;
+            /* Adjust this value to change the table width */
+        }
+
+        #songRequestTable th,
+        #songRequestTable td {
+            border: 1px solid rgb(255, 84, 121);
+            padding: 8px;
+            text-align: center;
+        }
+
+        #songRequestTable th {
+            background-color: rgb(195, 127, 0);
+            color: black;
+        }
+
+        #songTitle {
+            width: 80%;
+            /* Adjust this value to change the input width */
+        }
+
+        #tipAmount {
+            width: 10rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwH8Dfyp7" crossorigin="anonymous"></script> -->
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js" crossorigin="anonymous"></script>
+
+    <!-- <script src="socket.io/socket.io.js"></script> -->
+    <script src="index.js" type="module"></script>
+
+    <h1>MusicApp</h1>
+    <!-- <div id="songList"></div> -->
+    <!-- <table id="songRequestTable" style="align-self: center;">
+        <thead>
+            <tr>
+                <th>Song Title</th>
+                <th>Tip Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Song requests will be populated here -->
+    <!-- </tbody>
+    </table> -->
+
+    <div id="tableContainer">
+        <table id="songRequestTable">
+            <thead>
+                <tr>
+                    <th>Song Title</th>
+                    <th>Tip Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <!-- <table>
+        <thead>
+            <tr>
+                <th>Song Title</th>
+                <th>Tip Amount</th>
+            </tr>
+        </thead>
+        <tbody id="songRequestTable"></tbody>
+    </table> -->
+
+    <br>
+
+    <form id="songRequestForm">
+        <label for="songTitle">Available Songs</label>
+        <br>
+        <select id="songTitle" required>
+        </select>
+        <br><br>
+        <input type="number" id="tipAmount" placeholder="Tip Amount" min="1" step="0.01" required>
+        <br><br>
+        <button type="submit">Request Song</button>
+    </form>
+
+
+
+</body>
+
+</html>

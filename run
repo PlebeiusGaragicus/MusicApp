@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# node app.js
+
+DEBUG=socket.io* node app.js
