@@ -15,8 +15,9 @@ sudo apt-get upgrade
 sudo apt-get install -y build-essential curl
 
 # install nodejs
-curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+# curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 sudo apt-get install -y nodejs
+sudo apt-get install -y npm
 
 # install a web server
 sudo apt-get install -y nginx
@@ -30,10 +31,10 @@ sudo nano /etc/nginx/sites-available/<your_domain>
 
 server {
     listen 80;
-    server_name <your_domain>;
+    server_name veggietunes.com www.veggietunes.com;
 
     location / {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -42,7 +43,7 @@ server {
     }
 
     location ~ ^/(assets|images|javascript|stylesheets|swfs|system)/ {
-        root <path_to_your_app>/public;
+        root /home/segui/MusicApp/public;
         expires max;
         break;
     }
@@ -71,6 +72,9 @@ rm -rf /home/<your_username>/<your_app_name>/.git
 # TODO - I need to double check what --depth 1 does
 git clone --depth 1 <your_repository_url> /home/<your_username>/<your_app_name>
 
+# UPDATE .ENV FILE
+# ... figure it out
+
 
 # install application dependencies
 cd /home/<your_username>/<your_app_name>
@@ -80,6 +84,7 @@ npm install
 sudo npm install pm2 -g
 
 # start the app
+pm2 start npm --name "MusicApp" -- start
 pm2 start npm --name "<your_app_name>" -- start
 
 # save the app list
