@@ -1,0 +1,74 @@
+html {
+    background: rgb(0, 1, 52);
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    color: rgb(82, 255, 160);
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+h1 {
+    margin: 0;
+    padding: 0;
+    font-size: 3rem;
+    font-weight: 400;
+    padding: 20px;
+}
+
+#songRequestForm {
+    margin-bottom: 20px;
+}
+
+.song-item {
+    margin-bottom: 10px;
+}
+
+#tableContainer {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+#songRequestTable {
+    border-collapse: collapse;
+    margin-top: 20px;
+    width: 90%;
+    /* Adjust this value to change the table width */
+}
+
+#songRequestTable th,
+#songRequestTable td {
+    border: 1px solid rgb(255, 84, 121);
+    padding: 8px;
+    text-align: center;
+}
+
+#songRequestTable th {
+    background-color: rgb(195, 127, 0);
+    color: black;
+}
+
+#songTitle {
+    width: 80%;
+    /* Adjust this value to change the input width */
+}
+
+#tipAmount {
+    width: 10rem;
+}
+
+#payWithCashApp {
+    /* width: 10rem; */
+    color: green;
+}
+
+#payWithVenmo {
+    /* width: 10rem; */
+    color: blue;
+}

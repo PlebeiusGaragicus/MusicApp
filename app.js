@@ -29,6 +29,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'public/index.html'));
 });
 
+app.get('/list', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'public/list.html'));
+});
+
 
 // FETCH songs
 app.get('/api/songs', (req, res) => {
