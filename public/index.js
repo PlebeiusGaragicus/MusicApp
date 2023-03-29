@@ -1,3 +1,6 @@
+import config from './config.js';
+
+
 const songList = document.getElementById("songList");
 const tipAmount = document.getElementById("tipAmount");
 
@@ -62,7 +65,8 @@ async function fetchAvailableSongs() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    const socket = new WebSocket('ws://localhost:3000');
+    // const socket = new WebSocket('ws://localhost:3000');
+    const socket = new WebSocket(config.WEBSOCKET_URL);
 
     socket.addEventListener('open', () => {
         console.log('Connected to WebSocket server');
