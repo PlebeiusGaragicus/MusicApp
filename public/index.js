@@ -1,13 +1,6 @@
 import config from './config.js';
 
 
-const songList = document.getElementById("songList");
-const tipAmount = document.getElementById("tipAmount");
-
-const payWithCashApp = document.getElementById("payWithCashApp");
-const payWithVenmo = document.getElementById("payWithVenmo");
-
-
 async function fetchSongRequests() {
     const response = await fetch('/api/songs');
     const songRequests = await response.json();
@@ -62,8 +55,6 @@ async function fetchAvailableSongs() {
 }
 
 
-
-
 document.addEventListener('DOMContentLoaded', () => {
     // const socket = new WebSocket('ws://localhost:3000');
     const socket = new WebSocket(config.WEBSOCKET_URL);
@@ -75,28 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.addEventListener('message', (event) => {
         console.log(`Message from server: ${event.data}`);
         const data = JSON.parse(event.data);
-        if (data.type === 'newSong') {
-            console.log("adding a new song because the server told me to")
-            const { songTitle, tipAmount } = data;
-            console.log(`Received new song from the server: ${songTitle}`);
-
-            const tableBody = document.getElementById('songRequestTable').querySelector('tbody');
-            const row = document.createElement('tr');
-
-            const titleCell = document.createElement('td');
-            titleCell.textContent = songTitle;
-            row.appendChild(titleCell);
-
-            const tipAmountCell = document.createElement('td');
-            tipAmountCell.textContent = `$${parseFloat(tipAmount).toFixed(2)}`;
-            row.appendChild(tipAmountCell);
-
-            row.dataset.tipAmount = tipAmount;
-
-            tableBody.appendChild(row);
-
-            // Sort the rows by tipAmount
-            sortTableByTipAmount(tableBody);
+        if (data.type === 'newSong' || data.type === 'songDeleted') { // Add the 'songDeleted' message type
+            console.log("Song list updated... fetching a whole new table!");
+            fetchSongRequests();
         }
     });
 
@@ -104,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Disconnected from WebSocket server');
     });
 
+    const payWithCashApp = document.getElementById("payWithCashApp");
     payWithCashApp.addEventListener("click", async () => {
         console.log("user is paying with cash app")
 
@@ -118,7 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const tipAmount = parseFloat(document.getElementById('tipAmount').value).toFixed(2);
         console.log("tipAmount", tipAmount)
-        if (tipAmount === "NaN") {
+        if (tipAmount === "NaN" || tipAmount === "0.00") {
+            alert("Please select a tip amount.")
             console.log("NO TIP AMOUNT WAS ACTUALLY SELECTED.. BRO!!!")
             return
         }
@@ -139,24 +113,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         //TODO: this needs to be tailored to mobile...
         // window.open(openUrl, '_blank');
-        window.location.href = url;
+        if (config.WEBSOCKET_URL !== "ws://localhost:3000")
+            window.location.href = url;
+
+        // at the end...!
+        clearInputs();
     });
 
-
+    const payWithVenmo = document.getElementById("payWithVenmo");
     payWithVenmo.addEventListener("click", async () => {
         console.log("user is paying with venmo")
         alert("Venmo is not yet supported. Please pay with Cash App.")
+
+        // at the end...!
+        clearInputs();
     });
 });
 
 
-function sortTableByTipAmount(tableBody) {
-    const rows = Array.from(tableBody.querySelectorAll('tr')).sort((a, b) => {
-        return parseFloat(b.dataset.tipAmount) - parseFloat(a.dataset.tipAmount);
-    });
-
-    tableBody.innerHTML = '';
-    rows.forEach(row => tableBody.appendChild(row));
+function clearInputs() {
+    document.getElementById('songTitle').value = '';
+    document.getElementById('tipAmount').value = '';
 }
 
 
