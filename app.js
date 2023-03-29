@@ -84,6 +84,16 @@ wss.on('connection', (ws) => {
             const { songTitle, tipAmount } = data;
             console.log(`Received message: ${songTitle} with tip amount: ${tipAmount}`);
 
+            // search for duplicate songs
+            let duplicate = false
+            for (let i = 0; i < songRequests.length; i++) {
+                if (songRequests[i].songTitle === songTitle) {
+                    duplicate = true
+                    songRequests[i].tipAmount = (parseFloat(songRequests[i].tipAmount) + parseFloat(tipAmount)).toString()
+                    break
+                }
+            }
+
             songRequests.push({ songTitle, tipAmount }); // we add it to the global song list
             songRequests.sort((a, b) => parseFloat(b.tipAmount) - parseFloat(a.tipAmount)); // sort list
 
