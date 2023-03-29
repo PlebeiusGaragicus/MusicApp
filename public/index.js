@@ -95,8 +95,9 @@ function setupWebSocketEventListeners() {
 
         //TODO: this needs to be tailored to mobile...
         if (config.WEBSOCKET_URL !== "ws://localhost:3000")
-            window.open(openUrl, '_blank');
+            openCashApp(openUrl);
         // window.location.href = url;
+        // window.open(openUrl, '_blank'); // didn't work on mobile
 
         // at the end...!
         clearInputs();
@@ -113,6 +114,13 @@ function setupWebSocketEventListeners() {
 };
 
 
+function openCashApp(url) {
+    var a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.click();
+}
 
 
 async function fetchSongRequests() {
