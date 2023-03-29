@@ -1,63 +1,39 @@
 import config from './config.js';
 
 
-async function fetchSongRequests() {
-    const response = await fetch('/api/songs');
-    const songRequests = await response.json();
+let socket = setupWebSocket();
 
-    // Sort the song requests by tip amount (descending order)
-    songRequests.sort((a, b) => parseFloat(b.tipAmount) - parseFloat(a.tipAmount));
+function setupWebSocket() {
+    // const socket = new WebSocket('ws://localhost:3000');
+    const socket = new WebSocket(config.WEBSOCKET_URL);
 
-    const tableBody = document.getElementById('songRequestTable').querySelector('tbody');
-    tableBody.innerHTML = '';
-
-    songRequests.forEach(({ songTitle, tipAmount }) => {
-        const row = document.createElement('tr');
-
-        const titleCell = document.createElement('td');
-        titleCell.textContent = songTitle;
-        row.appendChild(titleCell);
-
-        const tipAmountCell = document.createElement('td');
-        tipAmountCell.textContent = `$${parseFloat(tipAmount).toFixed(2)}`;
-        row.appendChild(tipAmountCell);
-
-        tableBody.appendChild(row);
-    });
-}
-
-
-// THIS IS FOR A DROP DOWN AKA 'SELECT'
-function populateAvailableSongs(songs) {
-    const songSelect = document.getElementById('songTitle');
-    console.log("populating song list")
-
-    const firstOption = document.createElement('option');
-    firstOption.value = "Select a song:";
-    firstOption.textContent = "Select a song:";
-    songSelect.appendChild(firstOption);
-
-    songs.forEach((song) => {
-        const option = document.createElement('option');
-        option.value = song;
-        option.textContent = song;
-        songSelect.appendChild(option);
-    });
-}
-
-
-async function fetchAvailableSongs() {
-    const songs = await fetch('/api/available-songs');
-    const ans = await songs.json()
-
-    console.log(ans)
-    return ans
+    return socket;
 }
 
 
 document.addEventListener('DOMContentLoaded', () => {
+    setupWebSocketEventListeners();
+});
+
+
+window.addEventListener('focus', () => {
+    // If the WebSocket connection is closed, reconnect
+    if (socket.readyState === WebSocket.CLOSED) {
+        console.log('Reconnecting WebSocket...');
+        socket = setupWebSocket();
+    }
+    // Set up WebSocket event listeners
+    setupWebSocketEventListeners();
+
+    // Refetch song requests to ensure the table is up to date
+    fetchSongRequests();
+});
+
+
+function setupWebSocketEventListeners() {
+    // document.addEventListener('DOMContentLoaded', () => {
     // const socket = new WebSocket('ws://localhost:3000');
-    const socket = new WebSocket(config.WEBSOCKET_URL);
+    // const socket = new WebSocket(config.WEBSOCKET_URL);
 
     socket.addEventListener('open', () => {
         console.log('Connected to WebSocket server');
@@ -128,14 +104,69 @@ document.addEventListener('DOMContentLoaded', () => {
         // at the end...!
         clearInputs();
     });
-});
+};
+
+
+
+
+async function fetchSongRequests() {
+    const response = await fetch('/api/songs');
+    const songRequests = await response.json();
+
+    // Sort the song requests by tip amount (descending order)
+    songRequests.sort((a, b) => parseFloat(b.tipAmount) - parseFloat(a.tipAmount));
+
+    const tableBody = document.getElementById('songRequestTable').querySelector('tbody');
+    tableBody.innerHTML = '';
+
+    songRequests.forEach(({ songTitle, tipAmount }) => {
+        const row = document.createElement('tr');
+
+        const titleCell = document.createElement('td');
+        titleCell.textContent = songTitle;
+        row.appendChild(titleCell);
+
+        const tipAmountCell = document.createElement('td');
+        tipAmountCell.textContent = `$${parseFloat(tipAmount).toFixed(2)}`;
+        row.appendChild(tipAmountCell);
+
+        tableBody.appendChild(row);
+    });
+}
+
+
+// THIS IS FOR A DROP DOWN AKA 'SELECT'
+function populateAvailableSongs(songs) {
+    const songSelect = document.getElementById('songTitle');
+    console.log("populating song list")
+
+    const firstOption = document.createElement('option');
+    firstOption.value = "Select a song:";
+    firstOption.textContent = "Select a song:";
+    songSelect.appendChild(firstOption);
+
+    songs.forEach((song) => {
+        const option = document.createElement('option');
+        option.value = song;
+        option.textContent = song;
+        songSelect.appendChild(option);
+    });
+}
+
+
+async function fetchAvailableSongs() {
+    const songs = await fetch('/api/available-songs');
+    const ans = await songs.json()
+
+    console.log(ans)
+    return ans
+}
 
 
 function clearInputs() {
     document.getElementById('songTitle').value = '';
     document.getElementById('tipAmount').value = '';
 }
-
 
 
 // async IIFE (Immediately Invoked Function Expression) to call fetchAvailableSongs()
