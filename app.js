@@ -88,14 +88,17 @@ wss.on('connection', (ws) => {
             let duplicate = false
             for (let i = 0; i < songRequests.length; i++) {
                 if (songRequests[i].songTitle === songTitle) {
+                    console.log("duplicate song found, adding tip amount to existing song")
                     duplicate = true
                     songRequests[i].tipAmount = (parseFloat(songRequests[i].tipAmount) + parseFloat(tipAmount)).toString()
                     break
                 }
             }
 
-            songRequests.push({ songTitle, tipAmount }); // we add it to the global song list
-            songRequests.sort((a, b) => parseFloat(b.tipAmount) - parseFloat(a.tipAmount)); // sort list
+            if (!duplicate) {
+                songRequests.push({ songTitle, tipAmount }); // we add it to the global song list
+                songRequests.sort((a, b) => parseFloat(b.tipAmount) - parseFloat(a.tipAmount)); // sort list
+            }
 
             console.log("this is the server's sorted song list:")
             console.log(songRequests)
