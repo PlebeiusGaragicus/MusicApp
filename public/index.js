@@ -78,6 +78,12 @@ function setupWebSocketEventListeners() {
             tipAmount: tipAmount
         }
 
+        if (socket.readyState === WebSocket.CLOSED) {
+            alert("The WebSocket connection was closed! reconnecting...")
+            console.log('Reconnecting WebSocket...');
+            socket = setupWebSocket();
+        }
+
         socket.send(JSON.stringify({ type: 'request', ...songRequest }));
 
         const cashAppUrl = await fetch('/api/cashtag');
