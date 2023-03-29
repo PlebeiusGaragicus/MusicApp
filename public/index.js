@@ -66,8 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.addEventListener('message', (event) => {
         console.log(`Message from server: ${event.data}`);
         const data = JSON.parse(event.data);
-        if (data.type === 'newSong') {
-            console.log("someone added a new song... fetching a whole new table!")
+        if (data.type === 'newSong' || data.type === 'songDeleted') { // Add the 'songDeleted' message type
+            console.log("Song list updated... fetching a whole new table!");
             fetchSongRequests();
         }
     });
@@ -91,7 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const tipAmount = parseFloat(document.getElementById('tipAmount').value).toFixed(2);
         console.log("tipAmount", tipAmount)
-        if (tipAmount === "NaN") {
+        if (tipAmount === "NaN" || tipAmount === "0.00") {
+            alert("Please select a tip amount.")
             console.log("NO TIP AMOUNT WAS ACTUALLY SELECTED.. BRO!!!")
             return
         }
@@ -114,15 +115,26 @@ document.addEventListener('DOMContentLoaded', () => {
         // window.open(openUrl, '_blank');
         if (config.WEBSOCKET_URL !== "ws://localhost:3000")
             window.location.href = url;
+
+        // at the end...!
+        clearInputs();
     });
 
     const payWithVenmo = document.getElementById("payWithVenmo");
     payWithVenmo.addEventListener("click", async () => {
         console.log("user is paying with venmo")
         alert("Venmo is not yet supported. Please pay with Cash App.")
+
+        // at the end...!
+        clearInputs();
     });
 });
 
+
+function clearInputs() {
+    document.getElementById('songTitle').value = '';
+    document.getElementById('tipAmount').value = '';
+}
 
 
 
