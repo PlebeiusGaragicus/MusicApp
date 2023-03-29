@@ -94,9 +94,9 @@ function setupWebSocketEventListeners() {
         console.log("openUrl", openUrl)
 
         //TODO: this needs to be tailored to mobile...
-        // window.open(openUrl, '_blank');
         if (config.WEBSOCKET_URL !== "ws://localhost:3000")
-            window.location.href = url;
+            window.open(openUrl, '_blank');
+        // window.location.href = url;
 
         // at the end...!
         clearInputs();
