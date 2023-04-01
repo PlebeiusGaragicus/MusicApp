@@ -1,8 +1,18 @@
 html {
-    background: rgb(0, 1, 52);
+    background: rgb(0, 0, 0);
     height: 100%;
-    overflow: hidden;
+    /* WARNING: THIS PREVENTS SCOLLING! */
+    /* overflow: hidden; */
+
+    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('./assets/fab.png');
+    /* background-size: cover; */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* height: 100%; */
+    overflow: auto;
 }
+
 
 body {
     color: rgb(82, 255, 160);
@@ -10,15 +20,27 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
-    height: 100%;
+    /* height: 100%; */
 }
+
+/* h1 {
+    margin: 0;
+    padding: 0;
+    font-size: 10vw;
+    font-weight: 400;
+    padding: 20px;
+} */
 
 h1 {
     margin: 0;
-    padding: 0;
-    font-size: 3rem;
-    font-weight: 400;
     padding: 20px;
+    font-size: 10vw;
+    /* Adjust this value to change the initial font size */
+    font-weight: 400;
+    white-space: nowrap;
+    /* Prevent the text from wrapping */
+    max-width: 100%;
+    /* Ensure that the text doesn't overflow the container horizontally */
 }
 
 #songRequestForm {
@@ -63,12 +85,30 @@ h1 {
     width: 10rem;
 }
 
+.payButton {
+    height: 100px;
+
+    /* Center the text horizontally and vertically */
+    /* display: flex; */
+    justify-content: center;
+    align-items: center;
+
+    /* Optional: Add some basic styling for the button text */
+    font-size: 22px;
+    font-weight: bold;
+}
+
 #payWithCashApp {
     /* width: 10rem; */
-    color: green;
+    color: rgb(222, 237, 0);
+    background-color: rgb(2, 87, 19);
+    border: 2px solid rgb(0, 255, 42);
 }
+
 
 #payWithVenmo {
     /* width: 10rem; */
-    color: blue;
+    color: rgb(1, 1, 32);
+    background-color: rgb(5, 69, 164);
+    border: 2px solid rgb(24, 234, 249);
 }
