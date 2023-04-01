@@ -4,7 +4,7 @@ import config from './config.js';
 let socket = setupWebSocket();
 
 function setupWebSocket() {
-    // const socket = new WebSocket('ws://localhost:3000');
+    // TODO: this is noob code - stop that!
     const socket = new WebSocket(config.WEBSOCKET_URL);
 
     return socket;
@@ -13,27 +13,39 @@ function setupWebSocket() {
 
 document.addEventListener('DOMContentLoaded', () => {
     setupWebSocketEventListeners();
+    populateAvailableSongsSelect();
+    fetchSongRequestsTable();
+
+    setupLinks();
 });
 
 
 window.addEventListener('focus', () => {
-    // If the WebSocket connection is closed, reconnect
     if (socket.readyState === WebSocket.CLOSED) {
+        // TODO DEBUG - remove this
+        alert("The WebSocket connection was closed! reconnecting...")
         console.log('Reconnecting WebSocket...');
         socket = setupWebSocket();
     }
-    // Set up WebSocket event listeners
     setupWebSocketEventListeners();
 
-    // Refetch song requests to ensure the table is up to date
-    fetchSongRequests();
+    fetchSongRequestsTable();
 });
 
 
+function setupLinks() {
+
+
+
+    cashAppLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log(`Cash App link clicked: ${link.href}`);
+    });
+}
+
+
+
 function setupWebSocketEventListeners() {
-    // document.addEventListener('DOMContentLoaded', () => {
-    // const socket = new WebSocket('ws://localhost:3000');
-    // const socket = new WebSocket(config.WEBSOCKET_URL);
 
     socket.addEventListener('open', () => {
         console.log('Connected to WebSocket server');
@@ -44,7 +56,7 @@ function setupWebSocketEventListeners() {
         const data = JSON.parse(event.data);
         if (data.type === 'newSong' || data.type === 'songDeleted') { // Add the 'songDeleted' message type
             console.log("Song list updated... fetching a whole new table!");
-            fetchSongRequests();
+            fetchSongRequestsTable();
         }
     });
 
@@ -52,16 +64,17 @@ function setupWebSocketEventListeners() {
         console.log('Disconnected from WebSocket server');
     });
 
-    const payWithCashApp = document.getElementById("payWithCashApp");
+    const payWithCashApp = document.getElementById("cashAppLink");
     payWithCashApp.addEventListener("click", async () => {
         console.log("user is paying with cash app")
 
-        // const songTitle = songList.options[songList.selectedIndex].text;
         const songTitle = document.getElementById('songTitle').value.trim();
         console.log("songTitle", songTitle)
 
         if (songTitle === "Select a song:") {
             console.log("NO SONG WAS ACTUALLY SELECTED.. BRO!!!")
+
+            payWithCashApp.preventDefault();
             return
         }
 
@@ -70,8 +83,12 @@ function setupWebSocketEventListeners() {
         if (tipAmount === "NaN" || tipAmount === "0.00") {
             alert("Please select a tip amount.")
             console.log("NO TIP AMOUNT WAS ACTUALLY SELECTED.. BRO!!!")
+
+            payWithCashApp.preventDefault();
             return
         }
+
+        payWithCashApp.href = `https://www.google.com`;
 
         const songRequest = {
             songTitle: songTitle,
@@ -86,16 +103,17 @@ function setupWebSocketEventListeners() {
 
         socket.send(JSON.stringify({ type: 'request', ...songRequest }));
 
-        const cashAppUrl = await fetch('/api/cashtag');
-        const { url } = await cashAppUrl.json();
-        console.log("url", url)
 
-        const openUrl = `${url}/${tipAmount}`;
-        console.log("openUrl", openUrl)
+        // const cashAppUrl = await fetch('/api/cashtag');
+        // const { url } = await cashAppUrl.json();
+        // console.log("url", url)
 
-        //TODO: this needs to be tailored to mobile...
-        if (config.WEBSOCKET_URL !== "ws://localhost:3000")
-            openCashApp(openUrl);
+        // const openUrl = `${url}/${tipAmount}`;
+        // console.log("openUrl", openUrl)
+
+        // //TODO: this needs to be tailored to mobile...
+        // if (config.WEBSOCKET_URL !== "ws://localhost:3000")
+        //     openCashApp(openUrl);
         // window.location.href = url;
         // window.open(openUrl, '_blank'); // didn't work on mobile
 
@@ -103,32 +121,25 @@ function setupWebSocketEventListeners() {
         clearInputs();
     });
 
-    const payWithVenmo = document.getElementById("payWithVenmo");
-    payWithVenmo.addEventListener("click", async () => {
-        console.log("user is paying with venmo")
-        alert("Venmo is not yet supported. Please pay with Cash App.")
+    // const payWithVenmo = document.getElementById("payWithVenmo");
+    // payWithVenmo.addEventListener("click", async () => {
+    //     console.log("user is paying with venmo")
+    //     alert("Venmo is not yet supported. Please pay with Cash App.")
 
-        // at the end...!
-        clearInputs();
-    });
+    //     // at the end...!
+    //     clearInputs();
+    // });
 };
 
 
-function openCashApp(url) {
-    var a = document.createElement('a');
-    a.href = url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.click();
-}
 
-
-async function fetchSongRequests() {
+async function fetchSongRequestsTable() {
     const response = await fetch('/api/songs');
     const songRequests = await response.json();
 
     // Sort the song requests by tip amount (descending order)
-    songRequests.sort((a, b) => parseFloat(b.tipAmount) - parseFloat(a.tipAmount));
+    // TODO: i shouldn't have to do this as the sorting is done in app.js
+    // songRequests.sort((a, b) => parseFloat(b.tipAmount) - parseFloat(a.tipAmount));
 
     const tableBody = document.getElementById('songRequestTable').querySelector('tbody');
     tableBody.innerHTML = '';
@@ -150,7 +161,12 @@ async function fetchSongRequests() {
 
 
 // THIS IS FOR A DROP DOWN AKA 'SELECT'
-function populateAvailableSongs(songs) {
+async function populateAvailableSongsSelect() {
+
+    const available = await fetch('/api/available-songs');
+    const songs = await available.json()
+    console.log(songs)
+
     const songSelect = document.getElementById('songTitle');
     console.log("populating song list")
 
@@ -168,14 +184,6 @@ function populateAvailableSongs(songs) {
 }
 
 
-async function fetchAvailableSongs() {
-    const songs = await fetch('/api/available-songs');
-    const ans = await songs.json()
-
-    console.log(ans)
-    return ans
-}
-
 
 function clearInputs() {
     document.getElementById('songTitle').value = '';
@@ -183,12 +191,14 @@ function clearInputs() {
 }
 
 
-// async IIFE (Immediately Invoked Function Expression) to call fetchAvailableSongs()
-//  and populate the dropdown when the page loads:
-(async function () {
-    const songs = await fetchAvailableSongs();
-    populateAvailableSongs(songs);
-})();
+
+// THESE HAVE BEEN MOVED INTO THE "WAIT FOR DOM TO LOAD" EVENT LISTENER
+// // async IIFE (Immediately Invoked Function Expression) to call fetchAvailableSongs()
+// //  and populate the dropdown when the page loads:
+// (async function () {
+//     const songs = await fetchAvailableSongs();
+//     populateAvailableSongsSelect(songs);
+// })();
 
 
-fetchSongRequests();
+// fetchSongRequestsTable();

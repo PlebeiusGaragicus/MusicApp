@@ -1,5 +1,30 @@
 import config from './config.js';
 
+
+document.addEventListener('DOMContentLoaded', () => {
+    // const socket = new WebSocket('ws://localhost:3000');
+    const socket = new WebSocket(config.WEBSOCKET_URL);
+
+    socket.addEventListener('open', () => {
+        console.log('Connected to WebSocket server');
+    });
+
+    socket.addEventListener('message', (event) => {
+        console.log(`Message from server: ${event.data}`);
+        const data = JSON.parse(event.data);
+        if (data.type === 'newSong') {
+            console.log("someone added a new song... fetching a whole new table!");
+            fetchSongRequests();
+        }
+    });
+
+    socket.addEventListener('close', () => {
+        console.log('Disconnected from WebSocket server');
+    });
+});
+
+
+
 async function fetchSongRequests() {
     const response = await fetch('/api/songs');
     const songRequests = await response.json();
@@ -33,46 +58,9 @@ async function fetchSongRequests() {
     });
 }
 
+
+
 async function deleteSongRequest(index) {
     await fetch(`/api/songs/${index}`, { method: 'DELETE' });
     fetchSongRequests();
 }
-
-async function fetchAvailableSongs() {
-    const songs = await fetch('/api/available-songs');
-    const ans = await songs.json();
-
-    console.log(ans);
-    return ans;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    // const socket = new WebSocket('ws://localhost:3000');
-    const socket = new WebSocket(config.WEBSOCKET_URL);
-
-    socket.addEventListener('open', () => {
-        console.log('Connected to WebSocket server');
-    });
-
-    socket.addEventListener('message', (event) => {
-        console.log(`Message from server: ${event.data}`);
-        const data = JSON.parse(event.data);
-        if (data.type === 'newSong') {
-            console.log("someone added a new song... fetching a whole new table!");
-            fetchSongRequests();
-        }
-    });
-
-    socket.addEventListener('close', () => {
-        console.log('Disconnected from WebSocket server');
-    });
-});
-
-// async IIFE (Immediately Invoked Function Expression) to call fetchAvailableSongs()
-//  and populate the dropdown when the page loads:
-(async function () {
-    const songs = await fetchAvailableSongs();
-    populateAvailableSongs(songs);
-})();
-
-fetchSongRequests();
