@@ -90,13 +90,14 @@ function setupWebSocketEventListeners() {
         const { url } = await cashAppUrl.json();
         console.log("url", url)
 
-        const openUrl = `${url}/${tipAmount}`;
+        // const openUrl = `${url}/${tipAmount}`;
+        const openUrl = `${url}`;
         console.log("openUrl", openUrl)
 
         //TODO: this needs to be tailored to mobile...
         if (config.WEBSOCKET_URL !== "ws://localhost:3000")
-            openCashApp(openUrl);
-        // window.location.href = url;
+            window.location.href = url;
+        // openCashApp(openUrl);
         // window.open(openUrl, '_blank'); // didn't work on mobile
 
         // at the end...!
