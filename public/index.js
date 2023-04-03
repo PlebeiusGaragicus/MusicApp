@@ -95,8 +95,8 @@ function setupWebSocketEventListeners() {
         console.log("openUrl", openUrl)
 
         //TODO: this needs to be tailored to mobile...
-        if (config.WEBSOCKET_URL !== "ws://localhost:3000")
-            window.location.href = url;
+        // if (config.WEBSOCKET_URL !== "ws://localhost:3000")
+        window.location.href = openUrl;
         // openCashApp(openUrl);
         // window.open(openUrl, '_blank'); // didn't work on mobile
 
